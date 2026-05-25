@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     
     # local
     # 'test_app',
-    'test_app.apps.TestAppConfig',
+    # 'test_app.apps.TestAppConfig',
+    'library.apps.LibraryConfig',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +72,7 @@ ROOT_URLCONF = 'config.urls'
 # AUTH_USER_MODEL = 'django.contrib.auth.User'
 # тут мы указываем DJango какую именно модель из какого приложения мы берём для работы с пользователями
 # по дефолту Django как раз работает со своим пользователем, нам это не подходит
-AUTH_USER_MODEL = 'test_app.User'
+AUTH_USER_MODEL = 'library.User'
 
 
 TEMPLATES = [
@@ -110,7 +111,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'my_database.db',
+            'NAME': BASE_DIR / 'db.sqlite3',
         },
 
         # 'secondary': {
