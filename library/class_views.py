@@ -33,6 +33,7 @@ from library.serializers import (
     PublisherUpdateSerializer, PublisherDetailSerializer
 )
 from library.models import Book, Category, Author, User, Publisher
+from query_debug import QueryDebug
 
 
 class BookListCreateAPIView(APIView):
@@ -257,7 +258,7 @@ class AuthorListCreateGenericView(ListCreateAPIView):
 
 class UserListGenericView(ListAPIView):
 
-    queryset = User.objects.all()
+    queryset = User.objects.prefetch_related('reviews')
     serializer_class = UserListSerializer
 
 
@@ -268,6 +269,12 @@ class UserListGenericView(ListAPIView):
         context['include_related'] = include_related.lower() == 'true'
 
         return context
+
+    # этот класс мы можем использовать как декоратор. В этом помогает магический метод __call__
+    # класс мы именно вызываем и можем (не обязательно) передать парметр file_name -- место, куда логи будут записываться
+    @QueryDebug(file_name='user-list-query.log')
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class BookListGenericView(ListAPIView):
