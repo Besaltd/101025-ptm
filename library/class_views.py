@@ -1,10 +1,11 @@
 from typing import Any
 
-from django.db.models import Model, Count
+from django.db.models import Count
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.pagination import PageNumberPagination, CursorPagination
 
 from rest_framework.views import APIView
 from rest_framework.generics import (
@@ -34,6 +35,12 @@ from library.serializers import (
 )
 from library.models import Book, Category, Author, User, Publisher
 from query_debug import QueryDebug
+
+
+
+class CustomPageNumberPaginator(PageNumberPagination):
+    page_size = 15
+    page_size_query_param = 'page-size'
 
 
 class BookListCreateAPIView(APIView):
@@ -162,17 +169,22 @@ class BookRetrieveUpdateDestroyAPIView(APIView):
 class CategoryListCreateGenericAPIView(GenericAPIView):
 
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    # serializer_class = CategorySerializer
+    pagination_class = CustomPageNumberPaginator
 
     def get(self, request: Request, *args, **kwargs) -> Response:
         categories = self.get_queryset()
 
-        serializer = self.get_serializer(categories, many=True)
+        pag = self.paginate_queryset(categories)
 
-        return Response(
-            data=serializer.data,
-            status=status.HTTP_200_OK
-        )
+        serializer = self.get_serializer(pag, many=True)
+
+        return self.get_paginated_response(serializer.data)
+
+        # return Response(
+        #     data=serializer.data,
+        #     status=status.HTTP_200_OK
+        # )
 
     def post(self, request: Request, *args, **kwargs) -> Response:
         serializer = self.get_serializer(data=request.data)
@@ -208,6 +220,8 @@ class AuthorListCreateGenericView(ListCreateAPIView):
 
     # queryset = Author.objects.all()  # какой набор данных возьмётся на ВСЮ вьюшку целиком
     # serializer_class = AuthorSerializer  # какой сериализатор будет взят на ВСЮ вьюшку целиком
+
+    pagination_class = CustomPageNumberPaginator
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -277,33 +291,40 @@ class UserListGenericView(ListAPIView):
         return super().list(request, *args, **kwargs)
 
 
+
+class CustomCursorPaginator(CursorPagination):
+    page_size = 10
+    ordering = 'id'
+
+
 class BookListGenericView(ListAPIView):
 
     queryset = Book.objects.all()
     serializer_class = BookListSerializer
+    pagination_class = CustomCursorPaginator
 
-    filter_backends = [
-        DjangoFilterBackend, # фильтрация данных
-        SearchFilter, # поиск объектов
-        OrderingFilter # сортировку объектов
-    ]
-
-    filterset_fields = [
-        'author',
-        'price',
-        'publisher',
-        'category',
-        'published_date',
-    ]
-    search_fields = [
-        'name',
-        'description',
-    ]
-    ordering_fields = [
-        'id',
-        'price',
-        'published_date',
-    ]
+    # filter_backends = [
+    #     DjangoFilterBackend, # фильтрация данных
+    #     SearchFilter, # поиск объектов
+    #     OrderingFilter # сортировку объектов
+    # ]
+    #
+    # filterset_fields = [
+    #     'author',
+    #     'price',
+    #     'publisher',
+    #     'category',
+    #     'published_date',
+    # ]
+    # search_fields = [
+    #     'name',
+    #     'description',
+    # ]
+    # ordering_fields = [
+    #     'id',
+    #     'price',
+    #     'published_date',
+    # ]
 
 
 
