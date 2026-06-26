@@ -5,18 +5,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 from library.views import book_list_create
-from library.class_views import (
-    BookListCreateAPIView,
-    BookRetrieveUpdateDestroyAPIView,
-    CategoryListCreateGenericAPIView,
-    CategoryRetrieveUpdateDestroyGenericView,
-    AuthorListCreateGenericView,
-    UserListGenericView,
-    BookListGenericView,
-    PublisherViewSet,
-    AuthorViewSet,
-    BookUpdateGenericView, CategoryStatisticGenricView
-)
+from library.class_views import (BookListCreateAPIView, BookRetrieveUpdateDestroyAPIView,
+                                 CategoryListCreateGenericAPIView, CategoryRetrieveUpdateDestroyGenericView,
+                                 AuthorListCreateGenericView, UserListGenericView, BookListGenericView,
+                                 PublisherViewSet, AuthorViewSet, BookUpdateGenericView, CategoryStatisticGenricView,
+                                 LoginUser, LogoutUser)
 
 
 router = SimpleRouter()
@@ -36,8 +29,8 @@ urlpatterns = [
     # jwt token auth
     path('jwt-auth/', TokenObtainPairView.as_view()),
     path('jwt-refresh/', TokenRefreshView.as_view()),
-
-
+    path('auth/login/', LoginUser.as_view()),
+    path('auth/logout/', LogoutUser.as_view()),
     # path('books/', book_list_create),
     # path('books/', BookListCreateAPIView.as_view()),
     path('books/', BookListGenericView.as_view()),

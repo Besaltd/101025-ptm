@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'drf_spectacular',
+    'rest_framework_simplejwt.token_blacklist',
 
     # local
     # 'test_app',
@@ -181,9 +182,10 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7), # время жизни токена обновления (с ним делаем запросы)
 
     # Ротация(обновление и перевыпуск) токенов при обновлении \ истечении срока жизни
-    "ROTATE_REFRESH_TOKENS": False,
+    "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True, # если включаем ротацию и чёрный список -- допом регистрируем +1 приложение и делаем миграции для создания таблиц чёрного списка
-    "BLACKLIST_ENABLED": False, # если поставить True == нужна миграция
+    "BLACKLIST_ENABLED": True, # если поставить True == нужна миграция
+    "JTI_CLAIM": "jti",
 
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
